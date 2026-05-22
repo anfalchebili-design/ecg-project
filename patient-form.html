@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white flex justify-center items-center min-h-screen">
+
+<button onclick="goBack()" class="absolute top-5 left-5 text-sm text-gray-300 hover:text-white z-10 bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/20 transition flex items-center gap-1">
+    ← Back
+</button>
+
+<div class="bg-white/5 p-6 rounded-xl w-96 space-y-3 border border-white/10">
+
+    <h2 class="text-xl text-center text-red-400 font-semibold">Patient Info</h2>
+
+    <input id="full_name" placeholder="Full Name (First & Last Name)" class="w-full p-2 bg-black rounded border border-white/10 focus:outline-none focus:border-red-500">
+
+    <select id="gender" class="w-full p-2 bg-black rounded border border-white/10 focus:outline-none focus:border-red-500">
+        <option>Male</option>
+        <option>Female</option>
+    </select>
+
+    <input id="age" placeholder="Age" type="number" min="0" class="w-full p-2 bg-black rounded border border-white/10 focus:outline-none focus:border-red-500">
+
+    <select id="disease" class="w-full p-2 bg-black rounded border border-white/10 focus:outline-none focus:border-red-500">
+        <option value="">Select disease</option>
+        <option value="none">No disease</option>
+        <option value="hypertension">Hypertension (High blood pressure)</option>
+        <option value="diabetes">Diabetes</option>
+        <option value="anemia">Anemia</option>
+        <option value="asthma">Asthma</option>
+        <option value="obesity">Obesity</option>
+        <option value="cholesterol">High cholesterol</option>
+        <option value="thyroid">Thyroid disorders</option>
+        <option value="kidney">Chronic kidney disease</option>
+        <option value="liver">Liver disease</option>
+        <option value="apnea">Sleep apnea</option>
+        <option value="smoking">Smoking</option>
+        <option value="stress">Stress / Anxiety</option>
+        <option value="depression">Depression</option>
+
+        <option value="heart_disease">Heart disease</option>
+        <option value="arrhythmia">Arrhythmia (irregular heartbeat)</option>
+        <option value="tachycardia">Tachycardia (fast heart rate)</option>
+        <option value="bradycardia">Bradycardia (slow heart rate)</option>
+        <option value="coronary">Coronary artery disease</option>
+        <option value="heart_failure">Heart failure</option>
+        <option value="angina">Angina (chest pain)</option>
+        <option value="palpitations">Heart palpitations</option>
+    </select>
+
+    <input id="other_disease" placeholder="Other disease..." class="w-full p-2 bg-black rounded border border-white/10 focus:outline-none focus:border-red-500">
+
+    <button onclick="go()" class="bg-red-500 w-full p-2 rounded hover:bg-red-600 transition font-medium">
+        Continue
+    </button>
+
+</div>
+
+<script>
+
+// 🚀 دالة الارسال والربط بالسيرفر
+async function go(){
+
+    let fullName = document.getElementById("full_name").value.trim();
+    let age = document.getElementById("age").value;
+    let gender = document.getElementById("gender").value;
+    let disease = document.getElementById("disease").value;
+
+    // التحقق أن الاسم يحتوي على حروف وفراغات فقط (مافيهش أرقام)
+    let regex = /^[A-Za-z\s]+$/;
+
+    if(fullName === "" || !regex.test(fullName)){
+        alert("Please enter a valid Full Name (letters only)");
+        return;
+    }
+
+    if(age === "" || age < 0){
+        alert("Age cannot be negative or empty");
+        return;
+    }
+
+    try {
+        // إرسال البيانات قبالة للسيرفر
+        const response = await fetch('http://127.0.0.1:5000/api/patients', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                full_name: fullName,
+                age: age,
+                gender: gender
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("تم حفظ المريض في قاعدة البيانات بنجاح!");
+
+            // حفظ المعطيات ف المتصفح باش نسحقوهم في صفحة التقرير والـ ECG
+            localStorage.setItem("patient_name", fullName);
+            localStorage.setItem("patient_age", age);
+            localStorage.setItem("patient_gender", gender);
+            localStorage.setItem("patient_disease", disease);
+            localStorage.setItem("current_patient_id", data.patient_id); 
+
+            // التوجه لصفحة الـ ECG
+            window.location.href = "ecg.html";
+        } else {
+            alert("خطأ من السيرفر: " + data.error);
+        }
+
+    } catch (error) {
+        console.error("Error:", error);
+        alert("تعذر الاتصال بالسيرفر، تأكد أن الـ Backend (app.py) شغال في الـ Terminal.");
+    }
+}
+
+/* 🔙 دالة العودة للـ login */
+function goBack(){
+    window.location.href = "login.html";
+}
+
+</script>
+
+</body>
+</html>

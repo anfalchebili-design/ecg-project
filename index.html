@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECGenius</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        .gradient-bg {
+            background: radial-gradient(circle at 80% 20%, #ff4b5c 0%, #2b0004 50%, #0d0002 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .blob {
+            position: absolute;
+            background: linear-gradient(45deg, #ff2e43, #7a0010);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: 1;
+            opacity: 0.6;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(255, 75, 92, 0.6);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-[#0d0002] text-white font-sans antialiased overflow-x-hidden">
+
+    <div class="gradient-bg min-h-screen flex flex-col justify-between relative px-6 md:px-16 py-6">
+        
+        <div class="blob w-96 h-96 top-[-10%] right-[-10%]" id="blob1"></div>
+        <div class="blob w-80 h-80 bottom-[-10%] left-[-5%]" id="blob2"></div>
+
+        <header class="flex justify-between items-center relative z-10" id="navbar">
+            <div class="flex items-center gap-2 text-xl font-bold tracking-wider cursor-pointer">
+                <span class="inline-block w-3 h-6 bg-white rounded-full"></span>
+                <span class="inline-block w-1 h-6 bg-white opacity-60 rounded-full"></span>
+                <span class="mr-1">ECGenius</span>
+            </div>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+                <a href="index.html" class="text-white hover:text-red-400 transition-colors">Home</a>
+                <a href="About Us.html" class="hover:text-red-400 transition-colors">About Us</a>
+                <a href="Our Services.html" class="hover:text-red-400 transition-colors">Our Services</a>
+                <a href="Contact Us.html" class="hover:text-red-400 transition-colors">Contact Us</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <a href="login.html" class="text-sm hover:text-red-400 transition-colors px-4 py-2">Login</a>
+</a>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 items-center gap-12 my-auto relative z-10 max-w-7xl mx-auto w-full pt-12">
+            
+            <div class="space-y-6 text-right">
+                
+                <div id="text-container">
+                    <h1 id="hero-title" class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight">
+                        AI ECG Analysis
+                    </h1>
+                    <p id="hero-subtitle" class="text-2xl md:text-3xl font-light text-red-400 mt-2">
+                        Smart Heart Detection
+                    </p>
+                    <p id="hero-desc" class="text-gray-400 text-sm md:text-base max-w-lg leading-relaxed font-light mt-4">
+                        منصة ذكية لتحليل تخطيط القلب (ECG) باستخدام الذكاء الاصطناعي للكشف المبكر عن أمراض القلب بدقة عالية.
+                    </p>
+                </div>
+                
+                <div id="bullets" class="flex gap-3 justify-start items-center pt-2">
+                    <span data-index="0" class="bullet w-3 h-3 rounded-full bg-white cursor-pointer transition-all duration-300 shadow-[0_0_12px_rgba(255,255,255,1)] scale-110"></span>
+                    <span data-index="1" class="bullet w-3 h-3 rounded-full bg-white/30 hover:bg-white/70 cursor-pointer transition-all duration-300"></span>
+                    <span data-index="2" class="bullet w-3 h-3 rounded-full bg-white/30 hover:bg-white/70 cursor-pointer transition-all duration-300"></span>
+                    <span data-index="3" class="bullet w-3 h-3 rounded-full bg-white/30 hover:bg-white/70 cursor-pointer transition-all duration-300"></span>
+                    <span data-index="4" class="bullet w-3 h-3 rounded-full bg-white/30 hover:bg-white/70 cursor-pointer transition-all duration-300"></span>
+                    <span data-index="5" class="bullet w-3 h-3 rounded-full bg-white/30 hover:bg-white/70 cursor-pointer transition-all duration-300"></span>
+            </div>
+
+                <div id="hero-btn" class="pt-4">
+    <button class="bg-white text-black font-semibold px-8 py-3 rounded-full hover:bg-red-500 hover:text-white btn-glow transition-all duration-300 shadow-lg" onclick="window.location.href='benifts.html'">
+        See More
+    </button>
+</div>
+            </div>
+
+            <div class="hidden md:flex justify-center items-center relative" id="hero-image-container">
+                <div class="absolute w-72 h-72 bg-red-600/15 blur-3xl rounded-full"></div>
+            </div>
+        </main>
+
+        <footer class="text-center text-xs text-gray-600 relative z-10 pt-6">
+            © 2026 ECGenius. All rights reserved.
+        </footer>
+    </div>
+
+    <script>
+        // مصفوفة الميزات (قمنا بضبطها لتتناسب مع الـ 4 نقاط الحالية)
+        const features = [
+  {
+    title: "AI ECG Analysis",
+    subtitle: "Smart Heart Detection",
+    desc: "منصة ذكية لتحليل تخطيط القلب (ECG) باستخدام الذكاء الاصطناعي للكشف المبكر عن أمراض القلب بدقة عالية."
+  },
+  {
+    title: "Instant Results",
+    subtitle: "Fast & Efficient",
+    desc: "قم برفع صورة ECG واحصل على تحليل فوري خلال ثوانٍ بدون تعقيد أو خطوات طويلة."
+  },
+  {
+    title: "High Accuracy",
+    subtitle: "Reliable Insights",
+    desc: "نستخدم خوارزميات متقدمة لتقديم نتائج دقيقة تساعد في اكتشاف اضطرابات القلب بسرعة."
+  },
+  {
+    title: "Secure System",
+    subtitle: "Data Protection",
+    desc: "نحمي بياناتك الطبية بأعلى معايير الأمان لضمان الخصوصية والثقة في استخدام المنصة."
+  },
+  {
+    title: "⚡ Speed",
+    subtitle: "Instant Processing",
+    desc: "تحليل سريع في ثوانٍ مع نتائج فورية بدون أي انتظار. احصل على تحليل دقيق لتخطيط القلب خلال ثوانٍ فقط."
+  },
+  {
+    title: "🧠 Artificial Intelligence",
+    subtitle: "Smart ECG Interpretation",
+    desc: "تحليل ذكي يعتمد على الذكاء الاصطناعي لفهم إشارات ECG وتحليلها تلقائيًا لاستخراج معلومات طبية دقيقة تساعد في الكشف المبكر عن اضطرابات القلب."
+  }
+];
+
+        const bullets = document.querySelectorAll('.bullet');
+        const heroTitle = document.getElementById('hero-title');
+        const heroSubtitle = document.getElementById('hero-subtitle');
+        const heroDesc = document.getElementById('hero-desc');
+
+        let currentIndex = 0;
+        let autoplayTimer;
+
+        // دالة تغيير المحتوى والأنيميشن والشعاع للنقاط
+        function updateContent(index) {
+            gsap.to("#text-container", {
+                opacity: 0,
+                x: -20,
+                duration: 0.3,
+                onComplete: () => {
+                    // تصحيح استدعاء المصفوفة الصحيحة features
+                    heroTitle.innerText = features[index].title;
+                    heroSubtitle.innerText = features[index].subtitle;
+                    heroDesc.innerText = features[index].desc;
+
+                    gsap.to("#text-container", {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    });
+                }
+            });
+
+            // تحديث إضاءة وشعاع النقاط النشطة
+            bullets.forEach((bullet, i) => {
+                if (i === index) {
+                    bullet.classList.remove('bg-white/30');
+                    bullet.classList.add('bg-white', 'shadow-[0_0_12px_rgba(255,255,255,1)]', 'scale-110');
+                } else {
+                    bullet.classList.remove('bg-white', 'shadow-[0_0_12px_rgba(255,255,255,1)]', 'scale-110');
+                    bullet.classList.add('bg-white/30');
+                }
+            });
+        }
+
+        // دالة التحريك التلقائي كل ثانيتين (تم ضبط الوقت على 2000ms ليقرأ المستخدم براحته)
+        function startAutoplay() {
+            autoplayTimer = setInterval(() => {
+                currentIndex = (currentIndex + 1) % features.length; // تصحيح الاسم هنا أيضاً
+                updateContent(currentIndex);
+            }, 4000); 
+        }
+
+        // تشغيل العرض التلقائي فور تحميل الصفحة
+        startAutoplay();
+
+        // التحكم اليدوي عند الضغط على أي نقطة
+        bullets.forEach(bullet => {
+            bullet.addEventListener('click', (e) => {
+                clearInterval(autoplayTimer); 
+                currentIndex = parseInt(e.target.getAttribute('data-index')); 
+                updateContent(currentIndex);
+                startAutoplay(); 
+            });
+        });
+
+        // أنيميشن الدخول الأولي عند تحميل الصفحة
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.from("#navbar", { y: -50, opacity: 0, duration: 1.2, ease: "power3.out" });
+            gsap.from("#text-container", { x: 50, opacity: 0, duration: 1.2, ease: "power3.out", delay: 0.3 });
+            gsap.from("#bullets", { opacity: 0, duration: 1, delay: 0.6 });
+            gsap.from("#hero-btn", { y: 30, opacity: 0, duration: 1, ease: "back.out(1.7)", delay: 0.8 });
+            
+            // حركة الخلفية المستمرة ببطء
+            gsap.to("#blob1", { x: "random(-40, 40)", y: "random(-40, 40)", duration: 6, repeat: -1, yoyo: true, ease: "sine.inOut" });
+            gsap.to("#blob2", { x: "random(-50, 50)", y: "random(-50, 50)", duration: 8, repeat: -1, yoyo: true, ease: "sine.inOut" });
+        });
+    </script>
+</body>
+</html>

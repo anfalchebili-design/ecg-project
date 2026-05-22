@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Info</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        .gradient-bg {
+            background: radial-gradient(circle at 50% 50%, #ff4b5c 0%, #2b0004 60%, #0d0002 100%);
+        }
+        .blob {
+            position: absolute;
+            background: linear-gradient(45deg, #ff2e43, #7a0010);
+            filter: blur(90px);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+        .glass {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+    </style>
+</head>
+
+<body class="gradient-bg text-white min-h-screen flex items-center justify-center overflow-hidden">
+
+<div class="blob w-96 h-96 top-[-10%] right-[-10%]" id="b1"></div>
+<div class="blob w-80 h-80 bottom-[-10%] left-[-5%]" id="b2"></div>
+
+<button onclick="goBack()" 
+class="absolute top-5 left-5 text-sm text-gray-300 hover:text-white z-20 bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/20 transition">
+    ← Back
+</button>
+
+<div class="glass p-8 rounded-3xl w-full max-w-md space-y-5 z-10">
+
+    <h2 class="text-2xl font-bold text-center">Doctor Information</h2>
+
+    <input id="doc_name" placeholder="Full Name" 
+    class="w-full p-3 bg-white/5 rounded-xl border border-white/10 focus:outline-none focus:border-red-500">
+
+    <input id="doc_exp" placeholder="Years of Experience" type="number" min="0"
+    class="w-full p-3 bg-white/5 rounded-xl border border-white/10 focus:outline-none focus:border-red-500">
+
+    <input id="doc_hospital" placeholder="Hospital / Clinic" 
+    class="w-full p-3 bg-white/5 rounded-xl border border-white/10 focus:outline-none focus:border-red-500">
+
+    <input id="doc_phone" placeholder="Phone Number" 
+    class="w-full p-3 bg-white/5 rounded-xl border border-white/10 focus:outline-none focus:border-red-500">
+
+    <button onclick="go()" 
+    class="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-red-500 hover:text-white transition">
+        Continue
+    </button>
+
+</div>
+
+<script>
+
+/* 🔙 BACK → login */
+function goBack(){
+    window.location.href = "login.html";
+}
+
+/* 🚀 CONTINUE WITH SAVING DATA */
+function go(){
+    let docName = document.getElementById("doc_name").value.trim();
+    let docExp = document.getElementById("doc_exp").value;
+    let docHospital = document.getElementById("doc_hospital").value.trim();
+    let docPhone = document.getElementById("doc_phone").value.trim();
+
+    // التحقق من الحقول الأساسية
+    if(docName === "" || docHospital === ""){
+        alert("Please fill in your Name and Hospital");
+        return;
+    }
+
+    // خبي معلومات الطبيب فـ المتصفح
+    localStorage.setItem("doctor_name", "Dr. " + docName);
+    localStorage.setItem("doctor_hospital", docHospital);
+    localStorage.setItem("doctor_experience", docExp);
+    localStorage.setItem("doctor_phone", docPhone);
+
+    // الانتقال لصفحة الطبيب الرئيسية
+    window.location.href = "doctor.html";
+}
+
+/* 🎬 animations */
+gsap.from(".glass", {y:50, opacity:0, duration:1});
+gsap.to("#b1",{x:"random(-50,50)",y:"random(-50,50)",duration:6,repeat:-1,yoyo:true});
+gsap.to("#b2",{x:"random(-40,40)",y:"random(-40,40)",duration:8,repeat:-1,yoyo:true});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor ECG</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .gradient-bg {
+            background: radial-gradient(circle at 50% 50%, #ff4b5c 0%, #2b0004 60%, #0d0002 100%);
+        }
+        .glass {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+    </style>
+</head>
+
+<body class="gradient-bg text-white min-h-screen flex items-center justify-center relative overflow-hidden">
+
+<button onclick="goBack()" 
+class="absolute top-5 left-5 bg-white/10 px-3 py-1.5 rounded hover:bg-white/20 transition duration-200 z-10">
+    ← Back
+</button>
+
+<div class="glass p-6 rounded-xl w-[500px] space-y-4 z-10">
+
+    <h2 class="text-center text-xl text-red-400 font-semibold mb-1">ECG Doctor Analysis ❤️</h2>
+    <p class="text-center text-xs text-gray-400 mt-[-10px]">Logged in: <span id="activeDocName" class="text-white font-medium">Doctor</span></p>
+
+    <input type="file" id="ecg" accept="image/*" onchange="previewDocFile()"
+    class="w-full p-2 bg-black/50 border border-white/10 rounded file:bg-white/10 file:text-white file:border-0 file:rounded file:px-2 file:py-1 file:mr-2 file:hover:bg-white/20">
+
+    <div class="w-full h-32 bg-black/30 rounded border border-white/5 overflow-hidden flex items-center justify-center hidden" id="previewContainer">
+        <img id="docPreview" class="h-full object-contain">
+    </div>
+
+    <input id="age" type="number" min="0"
+    placeholder="Patient Age"
+    class="w-full p-2 bg-black border border-white/10 rounded focus:outline-none focus:border-red-500">
+
+    <select id="disease" class="w-full p-2 bg-black border border-white/10 rounded focus:outline-none focus:border-red-500">
+        <option value="none">No disease</option>
+        <option value="hypertension">Hypertension</option>
+        <option value="arrhythmia">Arrhythmia</option>
+        <option value="coronary">Coronary artery disease</option>
+        <option value="heart_failure">Heart failure</option>
+    </select>
+
+    <button onclick="goReport()" 
+    class="bg-red-500 w-full p-2 rounded hover:bg-red-600 font-medium transition duration-200">
+        Analyze ECG
+    </button>
+
+</div>
+
+<div id="paymentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 transition-opacity duration-300">
+    <div id="modalContent" class="bg-[#121212] border border-white/10 p-6 rounded-2xl w-[400px] text-center space-y-4 shadow-2xl">
+        
+        <div id="modalIcon" class="mx-auto w-12 h-12 bg-red-500/10 rounded-full flex justify-center items-center text-red-500 text-2xl font-bold">
+            🔒
+        </div>
+        
+        <h3 id="modalTitle" class="text-lg font-bold text-white">Analysis Report Locked</h3>
+        
+        <p id="modalText" class="text-sm text-gray-400">
+            The professional medical diagnosis is ready! Please complete the premium payment to unlock the full report.
+        </p>
+        
+        <div id="modalButtons" class="pt-2 space-y-2">
+            <button onclick="triggerFakePay()" class="w-full bg-red-500 hover:bg-red-600 text-white font-medium p-2.5 rounded-xl transition duration-200">
+                Pay to Unlock (1000 DZD)
+            </button>
+            <button onclick="closePaymentModal()" class="w-full bg-white/5 hover:bg-white/10 text-gray-300 p-2.5 rounded-xl text-sm transition duration-200">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+let docEcgBase64 = ""; // متغير لحفظ صورة التخطيط الخاصة بالطبيب
+
+// عرض اسم الطبيب الحالي فوق الفورمولار للتفاعل
+const storedDocName = localStorage.getItem("doctor_name");
+if(storedDocName) {
+    document.getElementById("activeDocName").innerText = storedDocName;
+}
+
+// دالة قراءة ومعاينة ملف التخطيط المرفوع
+function previewDocFile() {
+    const file = document.getElementById("ecg").files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            let img = document.getElementById("docPreview");
+            img.src = reader.result;
+            document.getElementById("previewContainer").classList.remove("hidden");
+            docEcgBase64 = reader.result; // تخزين الصورة فالمتغير
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+/* 🔙 BACK */
+function goBack(){
+    window.location.href = "login.html";
+}
+
+/* 🚀 ANALYZE */
+function goReport(){
+    let age = document.getElementById("age").value;
+    let disease = document.getElementById("disease").value;
+
+    if(!docEcgBase64) {
+        alert("Please upload an ECG image first");
+        return;
+    }
+
+    if(age === "" || age < 0){
+        alert("Enter valid age");
+        return;
+    }
+
+    // حفظ البيانات بأسماء مخصصة للطبيب حتى لا تختلط مع بيانات المريض العادي
+    localStorage.setItem("doc_patient_age", age);
+    localStorage.setItem("doc_patient_disease", disease);
+    localStorage.setItem("doctor_ecg_image", docEcgBase64);
+
+    // إظهار نافذة الدفع
+    openPaymentModal();
+}
+
+/* 🛠️ دالات التحكم في نافذة الدفع */
+function openPaymentModal() {
+    document.getElementById("modalIcon").innerHTML = "🔒";
+    document.getElementById("modalIcon").className = "mx-auto w-12 h-12 bg-red-500/10 rounded-full flex justify-center items-center text-red-500 text-2xl font-bold";
+    document.getElementById("modalTitle").innerText = "Analysis Report Locked";
+    document.getElementById("modalTitle").className = "text-lg font-bold text-white";
+    document.getElementById("modalText").innerText = "The professional medical diagnosis is ready! Please complete the premium payment to unlock the full report.";
+    document.getElementById("modalButtons").classList.remove("hidden");
+    
+    document.getElementById("paymentModal").classList.remove("hidden");
+}
+
+function closePaymentModal() {
+    document.getElementById("paymentModal").classList.add("hidden");
+}
+
+/* 💸 محاكاة الدفع الناجح والانتقال للتقرير */
+function triggerFakePay() {
+    document.getElementById("modalTitle").innerText = "Processing Payment...";
+    document.getElementById("modalText").innerText = "Verifying transaction, please wait...";
+    document.getElementById("modalButtons").classList.add("hidden"); 
+    document.getElementById("modalIcon").innerHTML = "⏳";
+
+    setTimeout(() => {
+        document.getElementById("modalIcon").innerHTML = "✓";
+        document.getElementById("modalIcon").className = "mx-auto w-12 h-12 bg-green-500/10 rounded-full flex justify-center items-center text-green-500 text-2xl font-bold";
+        document.getElementById("modalTitle").innerText = "Payment Successfully!";
+        document.getElementById("modalTitle").className = "text-lg font-bold text-green-400";
+        document.getElementById("modalText").innerText = "Generating doctor report...";
+
+        setTimeout(() => {
+            window.location.href = "report.html"; // التوجيه لصفحة التقرير الخاص بالأطباء
+        }, 1200);
+
+    }, 1000);
+}
+</script>
+
+</body>
+</html>

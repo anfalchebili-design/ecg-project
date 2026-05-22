@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ECGenius - Choose Role</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<style>
+.gradient-bg {
+    background: radial-gradient(circle at 50% 50%, #ff4b5c 0%, #2b0004 60%, #0d0002 100%);
+}
+.blob {
+    position: absolute;
+    background: linear-gradient(45deg, #ff2e43, #7a0010);
+    filter: blur(90px);
+    border-radius: 50%;
+    opacity: 0.5;
+}
+.glass {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+.role-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(255,75,92,0.6);
+}
+</style>
+</head>
+
+<body class="gradient-bg text-white min-h-screen flex items-center justify-center overflow-hidden relative">
+
+<!-- HOME -->
+<button onclick="goHome()" 
+class="absolute top-5 left-5 bg-white/10 px-3 py-1.5 rounded hover:bg-white/20 transition duration-200 text-sm z-10">
+🏠 Home
+</button>
+
+<!-- BLOBS -->
+<div class="blob w-96 h-96 top-[-10%] right-[-10%]"></div>
+<div class="blob w-80 h-80 bottom-[-10%] left-[-5%]"></div>
+
+<!-- CARD -->
+<div class="glass p-10 rounded-3xl w-full max-w-md text-center space-y-6 z-10">
+
+<h1 class="text-3xl font-extrabold">ECGenius</h1>
+<p class="text-gray-400 text-sm">Choose your role to continue</p>
+
+<div class="space-y-4">
+
+<button onclick="go('patient')" 
+class="role-btn w-full bg-white text-black font-bold py-3 rounded-xl transition">
+👤 Patient
+</button>
+
+<button onclick="go('doctor')" 
+class="role-btn w-full bg-white text-black font-bold py-3 rounded-xl transition">
+👨‍⚕️ Doctor
+</button>
+
+
+
+</div>
+
+</div>
+
+<script>
+
+function go(role){
+   
+    if(role === "patient"){
+        window.location.href = "patient-form.html";
+    }
+    else if(role === "doctor"){
+        window.location.href = "doctor-form.html";
+    }
+    
+    
+}
+
+
+/* home */
+function goHome(){
+    window.location.href = "index.html";
+}
+
+/* animations */
+gsap.from(".glass", {y:60, opacity:0, duration:1});
+gsap.to(".blob", {
+    x: "random(-50,50)",
+    y: "random(-50,50)",
+    duration: 6,
+    repeat: -1,
+    yoyo: true
+});
+
+</script>
+
+</body>
+</html>

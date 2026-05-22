@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ECG Result</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white flex justify-center items-center min-h-screen">
+
+<div class="bg-white/5 p-6 rounded-xl w-[520px] space-y-4 border border-white/10 my-10">
+
+    <h1 class="text-xl text-center text-red-400 font-semibold">AI ECG Analysis ❤️</h1>
+
+    <div class="bg-white/5 p-3 rounded border border-white/5 text-sm space-y-1">
+        <h3 class="text-gray-400 font-bold mb-1">Patient Dossier:</h3>
+        <p>👤 <span class="text-gray-400">Name:</span> <span id="patientName" class="font-medium text-white">---</span></p>
+        <p>🎂 <span class="text-gray-400">Age:</span> <span id="patientAge" class="text-white">---</span> | 👫 <span class="text-gray-400">Gender:</span> <span id="patientGender" class="text-white">---</span></p>
+        <p>📋 <span class="text-gray-400">Medical History:</span> <span id="patientHistory" class="text-yellow-400/80">None</span></p>
+    </div>
+
+    <div class="space-y-1">
+        <h3 class="text-sm text-gray-400 font-bold">Analyzed ECG Signal:</h3>
+        <div class="w-full h-40 bg-black rounded border border-white/10 overflow-hidden flex items-center justify-center">
+            <img id="ecgImage" class="w-full h-full object-cover hidden" alt="Patient ECG">
+            <p id="noImageText" class="text-xs text-gray-500">No ECG image found</p>
+        </div>
+    </div>
+
+    <hr class="border-white/10">
+
+    <p id="status" class="text-center text-2xl font-bold"></p>
+
+    <p id="score" class="text-center text-sm text-gray-300"></p>
+
+    <div id="details" class="text-sm text-gray-300 space-y-1"></div>
+
+    <div class="bg-black/40 p-3 rounded border border-white/10">
+        <h3 class="text-red-400">AI Medical Advice</h3>
+        <p id="advice" class="text-green-300 text-sm"></p>
+    </div>
+
+    <div class="bg-black/40 p-3 rounded border border-white/10">
+        <h3 class="text-red-400">Possible Conditions</h3>
+        <p id="diseases" class="text-yellow-300 text-sm"></p>
+    </div>
+
+    <button onclick="goBack()" class="bg-red-500 w-full p-2 rounded hover:bg-red-600 transition font-medium">
+        Back
+    </button>
+
+</div>
+
+<script>
+// 📥 1. جلب معلومات المريض والـ ECG من الـ LocalStorage وعرضهم
+const pName = localStorage.getItem("patient_name");
+const pAge = localStorage.getItem("patient_age");
+const pGender = localStorage.getItem("patient_gender");
+const pDisease = localStorage.getItem("patient_disease");
+const ecgImgData = localStorage.getItem("current_ecg_image");
+
+if(pName) document.getElementById("patientName").innerText = pName;
+if(pAge) document.getElementById("patientAge").innerText = pAge + " years old";
+if(pGender) document.getElementById("patientGender").innerText = pGender;
+if(pDisease && pDisease !== "none" && pDisease !== "") {
+    document.getElementById("patientHistory").innerText = pDisease;
+}
+
+if(ecgImgData) {
+    const imgTag = document.getElementById("ecgImage");
+    imgTag.src = ecgImgData;
+    imgTag.classList.remove("hidden");
+    document.getElementById("noImageText").classList.add("hidden");
+}
+
+// 🧠 2. حسابات الـ AI والـ Scoring (اللوجيك تاعك الأصلي)
+let heartRate = Math.floor(Math.random() * (120 - 50) + 50);
+let rhythm = Math.random();
+
+let status = document.getElementById("status");
+let score = document.getElementById("score");
+let details = document.getElementById("details");
+let advice = document.getElementById("advice");
+let diseases = document.getElementById("diseases");
+
+let riskScore = 0;
+
+if(heartRate < 60 || heartRate > 100) riskScore += 40;
+if(rhythm > 0.6) riskScore += 30;
+
+// إذا المريض عندو سوابق مرضية فـ القلب نزيدو شوية فالـ Risk Score باه يولي منطقي كثر
+if(pDisease && pDisease.includes("heart")) riskScore += 15;
+
+// عرض النتائج بناءً على السكور
+if(riskScore < 30){
+    status.innerHTML = "✅ NORMAL ECG";
+    status.style.color = "lightgreen";
+    score.innerHTML = "Risk Score: " + riskScore + "% (LOW)";
+    details.innerHTML = `Heart Rate: ${heartRate} bpm<br>Rhythm: Stable<br>Signal quality: Good`;
+    advice.innerHTML = "Keep healthy lifestyle, exercise regularly, sleep well.";
+    diseases.innerHTML = "No cardiac disease detected.";
+}
+else if(riskScore < 60){
+    status.innerHTML = "⚠️ BORDERLINE ECG";
+    status.style.color = "orange";
+    score.innerHTML = "Risk Score: " + riskScore + "% (MEDIUM)";
+    details.innerHTML = `Heart Rate: ${heartRate} bpm<br>Mild irregular rhythm detected`;
+    advice.innerHTML = "Monitor heart health, reduce stress, and limit caffeine intake.";
+    diseases.innerHTML = `Possible: early arrhythmia. ${pDisease && pDisease !== 'none' ? '(Aggravated by: ' + pDisease + ')' : ''}`;
+}
+else{
+    status.innerHTML = "❌ ABNORMAL ECG";
+    status.style.color = "red";
+    score.innerHTML = "Risk Score: " + riskScore + "% (HIGH)";
+    details.innerHTML = `Heart Rate: ${heartRate} bpm<br>Irregular rhythm detected<br>Signal instability`;
+    advice.innerHTML = "URGENT: Consult cardiologist immediately.";
+    diseases.innerHTML = `
+        - Arrhythmia<br>
+        - Coronary artery disease risk<br>
+        ${pDisease && pDisease !== 'none' ? '- Complication risk due to ' + pDisease : ''}
+    `;
+}
+
+// BACK FIX
+function goBack(){
+    window.location.href = "ecg.html";
+}
+</script>
+
+</body>
+</html>

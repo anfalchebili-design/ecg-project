@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ECG Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white min-h-screen flex justify-center items-center relative overflow-hidden">
+
+<button onclick="goBack()"
+    class="absolute top-5 left-5 bg-white/10 px-3 py-1.5 rounded hover:bg-white/20 text-sm z-10">
+    ← Back
+</button>
+
+<div class="bg-white/5 p-6 rounded-xl w-[470px] space-y-4 border border-white/10 z-10">
+
+    <h2 class="text-xl text-center text-red-400 font-semibold">ECG Scanner ❤️</h2>
+
+    <input type="file" id="upload" accept="image/*" onchange="previewFile()"
+        class="w-full p-2 bg-black border border-white/10 rounded file:bg-white/10 file:text-white file:border-0 file:rounded file:px-2 file:py-1 file:mr-2 file:hover:bg-white/20">
+
+    <button onclick="startCamera()"
+        class="bg-red-500 w-full p-2 rounded hover:bg-red-600 font-medium transition duration-200">
+        Open Camera
+    </button>
+
+    <video id="video" autoplay playsinline class="hidden w-full rounded border border-white/10"></video>
+
+    <button id="captureBtn" onclick="capture()"
+        class="hidden bg-green-500 w-full p-2 rounded mt-2 font-medium transition duration-200">
+        Capture
+    </button>
+
+    <img id="preview" class="hidden w-full rounded border border-white/10">
+
+    <button onclick="goAnalyze()"
+        class="bg-red-500 w-full p-2 rounded hover:bg-red-600 font-medium transition duration-200">
+        Analyze ECG
+    </button>
+
+</div>
+
+<div id="paymentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 transition-opacity duration-300">
+    <div id="modalContent" class="bg-[#121212] border border-white/10 p-6 rounded-2xl w-[400px] text-center space-y-4 shadow-2xl">
+        
+        <div id="modalIcon" class="mx-auto w-12 h-12 bg-red-500/10 rounded-full flex justify-center items-center text-red-500 text-2xl font-bold">
+            🔒
+        </div>
+        
+        <h3 id="modalTitle" class="text-lg font-bold text-white">Analysis Result Locked</h3>
+        
+        <p id="modalText" class="text-sm text-gray-400">
+            Your ECG analysis report is ready! To view the detailed premium diagnosis, please complete the payment.
+        </p>
+        
+        <div id="modalButtons" class="pt-2 space-y-2">
+            <button onclick="triggerFakePay()" class="w-full bg-red-500 hover:bg-red-600 text-white font-medium p-2.5 rounded-xl transition duration-200">
+                Pay to Unlock (500 DZD)
+            </button>
+            <button onclick="closePaymentModal()" class="w-full bg-white/5 hover:bg-white/10 text-gray-300 p-2.5 rounded-xl text-sm transition duration-200">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+let stream;
+let ecgImageBase64 = ""; // متغير نخبو فيه الصورة كـ نص
+
+// 🖼 دالة لمعاينة الصورة المرفوعة وتحويلها لـ Base64
+function previewFile() {
+    const file = document.getElementById("upload").files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            let img = document.getElementById("preview");
+            img.src = reader.result;
+            img.classList.remove("hidden");
+            ecgImageBase64 = reader.result; // خبينا الصورة هنا
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+// 📸 camera
+function startCamera(){
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(s => {
+        stream = s;
+        let video = document.getElementById("video");
+        video.srcObject = stream;
+
+        video.classList.remove("hidden");
+        document.getElementById("captureBtn").classList.remove("hidden");
+        document.getElementById("preview").classList.add("hidden");
+    })
+    .catch(() => alert("Camera blocked"));
+}
+
+// 📷 capture
+function capture(){
+    let video = document.getElementById("video");
+    let canvas = document.createElement("canvas");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
+
+    let img = document.getElementById("preview");
+    img.src = canvas.toDataURL("image/png");
+    img.classList.remove("hidden");
+    ecgImageBase64 = canvas.toDataURL("image/png"); // خبينا صورة الكاميرا هنا
+
+    if(stream){
+        stream.getTracks().forEach(t => t.stop());
+    }
+
+    video.classList.add("hidden");
+    document.getElementById("captureBtn").classList.add("hidden");
+}
+
+// 🚀 analyze
+function goAnalyze(){
+    // نتأكدو بلي كاين صورة مرفوعة أو مأخوذة بالكاميرا
+    if(!ecgImageBase64){
+        alert("Upload or take ECG photo first");
+        return;
+    }
+
+    // خبي الصورة فـ المتصفح باش تظهر فـ صفحة النتيجة مبعد
+    localStorage.setItem("current_ecg_image", ecgImageBase64);
+    window.location.href = "result.html"
+    
+    openPaymentModal();
+}
+
+// 🛠 دالات التحكم في نافذة الدفع
+function openPaymentModal() {
+    document.getElementById("modalIcon").innerHTML = "🔒";
+    document.getElementById("modalIcon").className = "mx-auto w-12 h-12 bg-red-500/10 rounded-full flex justify-center items-center text-red-500 text-2xl font-bold";
+    document.getElementById("modalTitle").innerText = "Analysis Result Locked";
+    document.getElementById("modalTitle").className = "text-lg font-bold text-white";
+    document.getElementById("modalText").innerText = "Your ECG analysis report is ready! To view the detailed premium diagnosis, please complete the payment.";
+    document.getElementById("modalButtons").classList.remove("hidden");
+    
+    document.getElementById("paymentModal").classList.remove("hidden");
+}
+
+function closePaymentModal() {
+    document.getElementById("paymentModal").classList.add("hidden");
+}
+
+// 💸 محاكاة الدفع الناجح
+function triggerFakePay() {
+    document.getElementById("modalTitle").innerText = "Processing Payment...";
+    document.getElementById("modalText").innerText = "Please wait a moment...";
+    document.getElementById("modalButtons").classList.add("hidden"); 
+    document.getElementById("modalIcon").innerHTML = "⏳";
+
+    setTimeout(() => {
+        document.getElementById("modalIcon").innerHTML = "✓";
+        document.getElementById("modalIcon").className = "mx-auto w-12 h-12 bg-green-500/10 rounded-full flex justify-center items-center text-green-500 text-2xl font-bold";
+        document.getElementById("modalTitle").innerText = "Payment Successful!";
+        document.getElementById("modalTitle").className = "text-lg font-bold text-green-400";
+        document.getElementById("modalText").innerText = "Redirecting to your analysis report...";
+
+        setTimeout(() => {
+            window.location.href = "result.html";
+        }, 1200);
+
+    }, 1000);
+}
+
+// 🔙 دالة العودة للـ login
+function goBack(){
+    window.location.href = "login.html"; 
+}
+</script>
+
+</body>
+</html>
